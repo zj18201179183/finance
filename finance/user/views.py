@@ -63,6 +63,7 @@ class UserViewSet(APIView):
         user_list = []
         for obj in user_obj:
             user_info = {
+                'uid': obj.id,
                 'username': obj.username,
                 'identity': obj.identity,
                 'photo': 'https://lin-xin.gitee.io/images/post/wms.png'
