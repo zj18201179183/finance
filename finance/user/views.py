@@ -20,13 +20,17 @@ class UserAuthView(APIView):
     def post(self, request, *args, **kwargs):
         username = request.data.get('username')
         password = request.data.get('password')
-        user = User(username=username, password=password)
+        try:
+            user = User.objects.get(username=username, password=password)
+        
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在')
 
         if user:
             payload = jwt_payload_handler(user)
             return common_response(data={'token': jwt.encode(payload, SECRET_KEY)})
         else:
-            return common_response(msg='用户名或密码错误!')
+            return common_response(code=500, msg='用户名或密码错误!')
 
 
 class UserViewSet(APIView):
@@ -44,7 +48,7 @@ class UserViewSet(APIView):
 
         # 如果用户名 密码 手机号不存在的话直接返回错误
         if not username or not pwd or not phone_number:
-            return common_response(msg='缺少必要信息')
+            return common_response(code=500, msg='缺少必要信息')
 
         user_obj = User.objects.create(
             username=username,
@@ -76,12 +80,12 @@ class UserViewSet(APIView):
         ''' 修改用户信息 '''
         data = request.data
         if 'uid' not in data:
-            return common_response(msg='用户id不存在')
+            return common_response(code=500, msg='用户id不存在')
         try:
             user_obj = User.objects.get(id=data['uid'])
         
         except User.DoesNotExist:
-            return common_response(msg='用户不存在')
+            return common_response(code=500, msg='用户不存在')
 
         username = data['username'] if 'username' in data else ''
         pwd = data['password'] if 'password' in data else ''
@@ -90,7 +94,7 @@ class UserViewSet(APIView):
 
         # 如果用户名 密码 手机号不存在的话直接返回错误
         if not username or not pwd or not phone_number:
-            return common_response(msg='缺少必要信息')
+            return common_response(code=500, msg='缺少必要信息')
 
         user_obj.username = username
         user_obj.password = pwd
@@ -105,13 +109,13 @@ class UserViewSet(APIView):
         ''' 删除用户 '''
         data = request.data
         if 'uid' not in data:
-            return common_response(msg='用户id不存在')
+            return common_response(code=500, msg='用户id不存在')
 
         try:
             user_obj = User.objects.get(id=data['uid'])
         
         except User.DoesNotExist:
-            return common_response(msg='用户不存在')
+            return common_response(code=500, msg='用户不存在')
 
         user_obj.delete()
         return common_response(msg='True')
