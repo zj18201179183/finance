@@ -39,7 +39,7 @@ class UserViewSet(APIView):
     '''
     def post(self, request, *args, **kwargs):
         # 创建用户
-        data = request.POST
+        data = request.data
        
         username = data['username'] if 'username' in data else ''
         pwd = data['password'] if 'password' in data else ''
