@@ -1,0 +1,9 @@
+.DS_Store
+*.pyc
+node_modules
+.vscode
+collect_static
+local*
+media
+migrations
+celerybeat-schedule.db
