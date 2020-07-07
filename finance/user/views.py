@@ -88,20 +88,18 @@ class UserViewSet(APIView):
         except User.DoesNotExist:
             return common_response(code=500, msg='用户不存在')
 
-        username = data['username'] if 'username' in data else ''
-        pwd = data['password'] if 'password' in data else ''
-        phone_number = data['phone_number'] if 'phone_number' in data else ''
-        identity = data['identity'] if 'identity' in data else 0
+        if 'username' in data and data['username'] and data['username'] != user_obj.username:
+            user_obj.username = data['username']
 
-        # 如果用户名 密码 手机号不存在的话直接返回错误
-        if not username or not pwd or not phone_number:
-            return common_response(code=500, msg='缺少必要信息')
+        if 'password' in data and data['password'] and data['password'] != user_obj.password:
+            user_obj.password = data['password']
 
-        user_obj.username = username
-        user_obj.password = pwd
-        user_obj.phone_number = phone_number
-        user_obj.identity = identity
-        user_obj.last_login = datetime.now()
+        if 'phone_number' in data and data['phone_number'] and data['phone_number'] != user_obj.phone_number:
+            user_obj.phone_number = data['phone_number']
+
+        if 'identity' in data and data['identity'] and data['identity'] != user_obj.identity:
+            user_obj.identity = data['identity']
+
         user_obj.save()
         return common_response(msg='True')
 
