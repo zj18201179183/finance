@@ -78,10 +78,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'finance',
-        'HOST': '127.0.0.1',
         'USER': 'root',
-        'PASSWORD': '',
-        'PORT': '3306'
+        'PASSWORD': 'Root1234.',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
