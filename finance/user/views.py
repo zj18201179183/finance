@@ -69,7 +69,8 @@ class UserViewSet(APIView):
             user_info = {
                 'uid': obj.id,
                 'username': obj.username,
-                'identity': obj.identity,
+                'phone_number': obj.phone_number,
+                'identity': obj.get_identity_display(),
                 'photo': 'https://lin-xin.gitee.io/images/post/wms.png'
             }
             user_list.append(user_info)
