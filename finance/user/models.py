@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from .func import ImageStorage
 
 
 USER_SEX_CHOICES = (
@@ -18,8 +19,9 @@ class User(models.Model):
     username = models.CharField("username", max_length=32)
     password = models.CharField("password", max_length=128)
     identity = models.SmallIntegerField("identity", choices=IDENTITY_CHOICES, default=0)
-    photo = models.ImageField(upload_to='./static/image/user', null=True, blank=True)
+    photo = models.ImageField(upload_to='./static/image/user', storage=ImageStorage(), null=True, blank=True)
     phone_number = models.CharField("phone number", max_length=15, unique=True)
+    is_shield = models.BooleanField("是否屏蔽", default=False)
     sex = models.SmallIntegerField("sex", choices=USER_SEX_CHOICES, default=0)
     last_login = models.DateTimeField("last login")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -33,6 +35,4 @@ class User(models.Model):
         verbose_name_plural = '用户'
 
     def image_url(self):
-        # if self.photo:
-        #     return self.photo
-        return '#'
+        return self.photo.url if self.photo else ''
