@@ -91,34 +91,56 @@ class UserViewSet(APIView):
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return common_response(code=500, msg='用户不存在!')
-        # 根据用户身份展示不同的用户列表
-        user_list = []
-        if user.identity==0:
-            user_obj = User.objects.all()
-            for obj in user_obj:
-                user_info = {
-                    'uid': HASHIDS.encode(obj.id),
-                    'username': obj.username,
-                    'phone_number': obj.phone_number,
-                    'identity': obj.get_identity_display(),
-                    'photo': obj.image_url()
-                }
-                user_list.append(user_info)
-        else:
+
+        if 'user_id' in request.GET:
+            update_user_id = request.GET['user_id']
+            # 获取要修改的用户的信息
+            try:
+                update_user_obj = User.objects.get(id=HASHIDS.decode(update_user_id)[0])
+            except User.DoesNotExist:
+                return common_response(code=500, msg='要修改的用户不存在!')
+
             user_info = {
                 'uid': HASHIDS.encode(user.id),
-                'username': user.username,
-                'phone_number': user.phone_number,
-                'identity': user.get_identity_display(),
-                'photo': user.image_url()
+                'username': update_user_obj.username,
+                'phone_number': update_user_obj.phone_number,
+                'identity': update_user_obj.identity,
+                'photo': update_user_obj.image_url(),
+                'is_shield': update_user_obj.is_shield
             }
-            user_list.append(user_info)
-        data = {
-            'identity': user.identity,
-            'user_list': user_list
-        }
+            return common_response(data=user_info)
 
-        return common_response(data=data)
+        else:
+            # 根据用户身份展示不同的用户列表
+            user_list = []
+            if user.identity==0:
+                user_obj = User.objects.all()
+                for obj in user_obj:
+                    user_info = {
+                        'uid': HASHIDS.encode(obj.id),
+                        'username': obj.username,
+                        'phone_number': obj.phone_number,
+                        'identity': obj.get_identity_display(),
+                        'photo': obj.image_url(),
+                        'is_shield': obj.is_shield
+                    }
+                    user_list.append(user_info)
+            else:
+                user_info = {
+                    'uid': HASHIDS.encode(user.id),
+                    'username': user.username,
+                    'phone_number': user.phone_number,
+                    'identity': user.get_identity_display(),
+                    'photo': user.image_url(),
+                    'is_shield': user.is_shield
+                }
+                user_list.append(user_info)
+            data = {
+                'identity': user.identity,
+                'user_list': user_list
+            }
+
+            return common_response(data=data)
 
 
     def put(self, request):
@@ -149,6 +171,9 @@ class UserViewSet(APIView):
 
         if 'identity' in data and data['identity'] and data['identity'] != user_obj.identity:
             user_obj.identity = data['identity']
+
+        if 'is_shield' in data and data['is_shield'] and data['is_shield'] != user_obj.is_shield:
+            user_obj.is_shield = data['is_shield']
 
         if 'photo' in data and data['photo']:
             # 删除文件
