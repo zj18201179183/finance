@@ -7,4 +7,5 @@ urlpatterns = [
     path('login/', views.UserAuthView.as_view()),
     path('put/', views.UserAuthView.as_view()),
     path('user/', views.UserViewSet.as_view()),
+    path('village/', views.VillageView.as_view()),
 ]

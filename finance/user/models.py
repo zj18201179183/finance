@@ -15,6 +15,15 @@ IDENTITY_CHOICES = (
     (2, '财务主管')
 )
 
+
+class Village(models.Model):
+    number = models.CharField("number", max_length=128)
+    name = models.CharField("username", max_length=128)
+    parent = models.ForeignKey("self", related_name='child_villages', null=True, blank=True, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+
 class User(models.Model):
     username = models.CharField("username", max_length=32)
     password = models.CharField("password", max_length=128)
@@ -23,6 +32,7 @@ class User(models.Model):
     phone_number = models.CharField("phone number", max_length=15, unique=True)
     is_shield = models.BooleanField("是否屏蔽", default=False)
     sex = models.SmallIntegerField("sex", choices=USER_SEX_CHOICES, default=0)
+    village = models.ForeignKey(Village, related_name='users', on_delete=models.CASCADE)
     last_login = models.DateTimeField("last login")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

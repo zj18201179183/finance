@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from finance.basic import common_response
 from rest_framework.viewsets import ModelViewSet
 from utils.tools import HASHIDS
-from .models import User
+from .models import User, Village
 from .func import login_required, is_logined
 from rest_framework_jwt.settings import api_settings
 from django.contrib.auth import authenticate, login, logout
@@ -66,9 +66,10 @@ class UserViewSet(APIView):
         pwd = data['password'] if 'password' in data else ''
         phone_number = data['phone_number'] if 'phone_number' in data else ''
         identity = data['identity'] if 'identity' in data else 0
+        # village = data['village'] if 'village' in data else 0
 
         # 如果用户名 密码 手机号不存在的话直接返回错误
-        if not username or not pwd or not phone_number:
+        if not username or not pwd or not phone_number :
             return common_response(code=500, msg='缺少必要信息')
 
         user_obj = User.objects.create(
@@ -77,7 +78,8 @@ class UserViewSet(APIView):
             phone_number=phone_number,
             identity=identity,
             last_login=datetime.now(),
-            photo=data['photo'] if 'photo' in data else ''
+            photo=data['photo'] if 'photo' in data else '',
+            village_id=user.village
         )
         user_obj.save()
         return common_response(msg='True')
@@ -203,3 +205,116 @@ class UserViewSet(APIView):
         user_obj.delete()
         return common_response(msg='True')
 
+
+class VillageView(APIView):
+    ''' 村庄的增删改查 '''
+    def post(self, request):
+        data = request.data
+        if 'number' not in data or 'name' not in data:
+            return common_response(code=500, msg='缺少必要参数')
+
+        if not data['number'] or not data['name']:
+            return common_response(code=500, msg='缺少必要值')
+
+        parent_obj = data.get('parent_id', None)
+        if parent_obj:
+            try:
+                parent_obj = Village.objects.get(id=parent_obj)
+            except Village.DoesNotExist:
+                return common_response(code=500, msg='父级id不存在')
+
+        village_obj = Village.objects.create(
+            number=data['number'],
+            name=data['name'],
+            parent=parent_obj
+        )
+        village_obj.save()
+        return common_response(msg='True')
+
+    def delete(self, request):
+        data = request.data
+        if 'v_id' not in data:
+            return common_response(code=500, msg='缺少必要参数')
+
+        if not data['v_id']:
+            return common_response(code=500, msg='缺少必要值')
+
+        try:
+            village_obj = Village.objects.get(id=data['v_id'])
+        except Village.DoesNotExist:
+            return common_response(code=500, msg='id不存在')
+        
+        return common_response(msg='True')
+
+    def put(self, request):
+        data = request.data
+        v_id = data.get('v_id', None)
+        number = data.get('number', None)
+        name = data.get('name', None)
+        parent_obj = data.get('parent_id', None)
+        if not v_id:
+            return common_response(code=500, msg='缺少id')
+
+        try:
+            village_obj = Village.objects.get(id=data['v_id'])
+        except Village.DoesNotExist:
+            return common_response(code=500, msg='id不存在')
+
+        if parent_obj:
+            try:
+                parent_obj = Village.objects.get(id=parent_obj)
+            except Village.DoesNotExist:
+                return common_response(code=500, msg='父级id不存在')
+            else:
+                village_obj.parent = parent_obj
+
+        village_obj.number = number
+        village_obj.name = name
+        village_obj.save()
+        return common_response(msg='True')
+
+    def get(self, request):
+        # 获取所有的乡镇用于修改
+        village_obj = Village.objects.all()
+        villages = []
+        for vill_obj in village_obj:
+            info = {
+                'id': vill_obj.id,
+                'name': vill_obj.name
+            }
+            villages.append(info)
+
+        if 'info' in request.GET:
+            return common_response(data=villages)
+        
+        if 'v_id' in request.GET:
+            if not request.GET['v_id']:
+                return common_response(code=500, msg='id为必要参数')
+            try:
+                village_obj = Village.objects.get(id=request.GET['v_id'])
+            except Village.DoesNotExist:
+                return common_response(code=500, msg='id不存在')
+
+            village_info = {
+                'id': village_obj.id,
+                'name': village_obj.name,
+                'number': village_obj.number,
+                'parent': village_obj.parent
+            }
+            result = {
+                'all_villages': villages,
+                'info': village_info
+            }
+            return common_response(data=result)
+            
+            
+        else:
+            village_list = []
+            for obj in village_obj:
+                village_info = {
+                    'number': obj.number,
+                    'name': obj.name,
+                    'parent': obj.parent.name if obj.parent else '-'
+                }
+                village_list.append(village_info)
+            return common_response(data=village_list)
