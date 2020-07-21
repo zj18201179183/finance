@@ -87,7 +87,7 @@ DATABASES = {
         'NAME': 'finance',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': 'Root1234.',
+        'PASSWORD': '123456',
         'OPTIONS': {
             'charset': 'utf8mb4',
         },
