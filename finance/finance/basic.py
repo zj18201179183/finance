@@ -1,4 +1,4 @@
-from django.utils import six
+# from django.utils import six
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 
