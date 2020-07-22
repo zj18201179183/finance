@@ -32,7 +32,7 @@ class User(models.Model):
     phone_number = models.CharField("phone number", max_length=15, unique=True)
     is_shield = models.BooleanField("是否屏蔽", default=False)
     sex = models.SmallIntegerField("sex", choices=USER_SEX_CHOICES, default=0)
-    village = models.ForeignKey(Village, related_name='users')
+    village = models.ForeignKey(Village, related_name='users', on_delete=models.CASCADE)
     last_login = models.DateTimeField("last login")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
