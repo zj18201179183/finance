@@ -272,6 +272,8 @@ class VillageView(APIView):
             village_obj = Village.objects.get(id=data['v_id'])
         except Village.DoesNotExist:
             return common_response(code=500, msg='id不存在')
+
+        village_obj.delete()
         
         return common_response(msg='True')
 
