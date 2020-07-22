@@ -355,7 +355,7 @@ class VillageView(APIView):
             village_list = []
             for obj in village_obj:
                 village_info = {
-                    'id': village_obj.id,
+                    'id': obj.id,
                     'number': obj.number,
                     'name': obj.name,
                     'parent': obj.parent.name if obj.parent else '-'
