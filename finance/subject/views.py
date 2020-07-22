@@ -77,25 +77,38 @@ class SetOfAccountsView(APIView):
         # 验证用户信息
         is_log, user_id = is_logined(request)
         try:
-            obj = User.objects.get(id=user_id)
+            user_obj = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return common_response(code=500, msg='用户不存在!')
 
         soa_id = request.GET.get('soa_id', '')
-        if not soa_id:
-            return common_response(code=500, msg='帐套id不能为空')
+        if soa_id:
+            try:
+                soa_obj = SetOfAccounts.objects.get(id=soa_id)
+            except SetOfAccounts.DoesNotExist:
+                return common_response(code=500, msg='帐套id不存在')
 
-        try:
-            soa_obj = SetOfAccounts.objects.get(id=soa_id)
-        except SetOfAccounts.DoesNotExist:
-            return common_response(code=500, msg='帐套id不存在')
+            soa_info = {
+                'id': soa_obj.id,
+                'name': soa_obj.name,
+                'date': datetime.strftime(soa_obj.date,'%Y-%m-%d')
+            }
+            return common_response(data=soa_info)
 
-        soa_info = {
-            'id': soa_obj.id,
-            'name': soa_obj.name,
-            'date': datetime.strftime(soa_obj.date,'%Y-%m-%d')
-        }
-        return common_response(data=soa_info)
+        get_type = request.GET.get('type', '')
+        if get_type == 'list':
+            soa_list = []
+            for obj in SetOfAccounts.objects.all():
+                if obj.is_shield and user_obj.identity != 0:
+                    continue
+
+                soa_info_list = {
+                    'id': obj.id,
+                    'name': obj.name,
+                    'date': datetime.strftime(obj.date,'%Y-%m-%d')
+                }
+                soa_list.append(soa_info_list)
+            return common_response(data=soa_list)
 
 
 class SubjectView(APIView):
