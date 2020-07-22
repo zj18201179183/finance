@@ -47,12 +47,16 @@ class SetOfAccountsView(APIView):
         if obj.identity != 0:
             return common_response(code=500, msg='当前身份无权修改')
 
+        data = request.data
+        soa_id = data.get('soa_id', '')
+        if not soa_id:
+            return common_response(code=500, msg='帐套id不能为空')
+
         try:
             soa_obj = SetOfAccounts.objects.get(id=soa_id)
         except SetOfAccounts.DoesNotExist:
             return common_response(code=500, msg='帐套id不存在')
 
-        data = request.data
         # 屏蔽帐套
         is_shield = data.get('is_shield', '')
         if is_shield:
