@@ -3,6 +3,7 @@ from datetime import date, datetime
 from rest_framework.views import APIView
 from .models import *
 from user.models import User
+from user.func import is_logined
 from subject.models import Subject, SubjectLog
 from finance.basic import common_response
 from utils.tools import HASHIDS
@@ -13,6 +14,13 @@ class VoucherView(APIView):
     ''' 凭证的增删改查 '''
     def post(self, request):
         # 接收数据并验证
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         voucher_word = data.get('voucher_word', '')
         soa_id = data.get('soa_id', '')
@@ -80,6 +88,13 @@ class VoucherView(APIView):
         return common_response(msg='True')
 
     def delete(self, request):
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         voucher_id = data.get('voucher_id', '')
         if not voucher_id:
@@ -93,6 +108,13 @@ class VoucherView(APIView):
 
     def put(self, request):
         # 接收数据并验证
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         voucher_id = data.get('voucher_id', '')
         if not voucher_id:
@@ -155,6 +177,13 @@ class VoucherView(APIView):
             type == list 获取凭证列表
             type == info 获取凭证管理表的信息(主要用于修改和添加)
         '''
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         voucher_id = request.GET.get('voucher_id', '')
         data_type = request.GET.get('type', 'info')
         sub_list = []
@@ -231,6 +260,13 @@ class VoucherView(APIView):
 class VoucherCheckView(APIView):
     def get(self, request):
         ''' 凭证审核 '''
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         voucher_id = request.GET.get('voucher_id', '')
         if not voucher_id:
             return common_response(code=500, msg='缺少凭证id')

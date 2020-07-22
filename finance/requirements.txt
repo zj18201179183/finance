@@ -3,4 +3,5 @@ mysqlclient==1.4.4
 Pillow==7.2.0
 djangorestframework==3.9.1
 django-cors-headers==3.4.0
- hashids==1.2.0
+hashids==1.2.0
+jwt==1.0.0

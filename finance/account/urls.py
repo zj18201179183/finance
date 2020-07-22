@@ -6,5 +6,6 @@ from . import views
 urlpatterns = [
     path('detail/', views.AccountDetailView.as_view()),
     path('all/', views.AllAccountView.as_view()),
-    path('subject/balance/', views.SubjectAccountView.as_view()),
+    # path('subject/balance/', views.SubjectAccountView.as_view()),
+    path('business/account/', views.BusinessAccountView.as_view()),
 ]

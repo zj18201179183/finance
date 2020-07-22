@@ -32,9 +32,17 @@ class UserAuthView(APIView):
             return common_response(code=500, msg='该用户已被屏蔽,无法登陆,请联系管理员!')
 
         if user:
-            # 记住登陆信息
-            login(request, user)
-            return common_response(data={'token': token_util.generate_token({'user_id': user.id})})
+            # 获取帐套列表
+            soa_list = []
+            for soa_obj in user.village.soa.all():
+                if soa_obj.is_shield and user.identity == 0:
+                    soa_info = {
+                        'id': soa_obj.id,
+                        'name': soa_obj.name,
+                        'date': datetime.strftime(soa_obj.date,'%Y-%m-%d')
+                    }
+                    soa_list.append(soa_info)
+            return common_response(data={'token': token_util.generate_token({'user_id': user.id}), 'soa_list':soa_list})
         else:
             return common_response(code=500, msg='用户名或密码错误!')
 
@@ -147,6 +155,13 @@ class UserViewSet(APIView):
 
     def put(self, request):
         ''' 修改用户信息 '''
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         update_user_id = HASHIDS.decode(data['uid'])[0]
         # 验证登陆用户信息
@@ -209,6 +224,13 @@ class UserViewSet(APIView):
 class VillageView(APIView):
     ''' 村庄的增删改查 '''
     def post(self, request):
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         if 'number' not in data or 'name' not in data:
             return common_response(code=500, msg='缺少必要参数')
@@ -232,6 +254,13 @@ class VillageView(APIView):
         return common_response(msg='True')
 
     def delete(self, request):
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         if 'v_id' not in data:
             return common_response(code=500, msg='缺少必要参数')
@@ -247,6 +276,13 @@ class VillageView(APIView):
         return common_response(msg='True')
 
     def put(self, request):
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         data = request.data
         v_id = data.get('v_id', None)
         number = data.get('number', None)
@@ -275,6 +311,13 @@ class VillageView(APIView):
 
     def get(self, request):
         # 获取所有的乡镇用于修改
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
         village_obj = Village.objects.all()
         villages = []
         for vill_obj in village_obj:

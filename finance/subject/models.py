@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from user.models import Village
 
 
 SUBJECT_TYPE = (
@@ -25,6 +26,8 @@ class Assist(models.Model):
 class SetOfAccounts(models.Model):
     name = models.CharField("帐期名称", max_length=128)
     date = models.DateField('帐期')
+    village = models.ForeignKey(Village, related_name='soa', on_delete=models.CASCADE)
+    is_shield = models.BooleanField("是否屏蔽", default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -46,7 +49,7 @@ class Subject(models.Model):
 
 class SubjectOfAccounts(models.Model):
     account = models.ForeignKey(SetOfAccounts, related_name='accountofsubjects', on_delete=models.CASCADE)
-    subject = models.ForeignKey(Subject, related_name='subjectofaccountss', on_delete=models.CASCADE)
+    subject = models.OneToOneField(Subject, related_name='subjectofaccounts', on_delete=models.CASCADE)
     num = models.IntegerField('科目数量', default=0)
     money = models.DecimalField("科目金额", max_digits=7, decimal_places=2)
 
