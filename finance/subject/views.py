@@ -385,12 +385,26 @@ class AssisView(APIView):
         except User.DoesNotExist:
             return common_response(code=500, msg='用户不存在!')
 
+        # 详情
+        ass_id = request.GET.get('ass_id', '')
+        if ass_id:
+            try:
+                ass_obj = Assist.objects.get(id=ass_id)
+            except Assist.DoesNotExist:
+                return common_response(code=500, msg='id不存在') 
+            else:
+                info = {
+                    'name': ass_obj.assist_name
+                }
+                return common_response(data=info)
+
+        # 辅助核算列表
         ass_obj = Assist.objects.all()
         ass_list = []
-        for obj in ass_obj:
+        for a_obj in ass_obj:
             ass_info = {
-                'id': obj.id,
-                'name': obj.assist_name
+                'id': a_obj.id,
+                'name': a_obj.assist_name
             }
             ass_list.append(ass_info)
 
