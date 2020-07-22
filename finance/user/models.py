@@ -19,7 +19,7 @@ IDENTITY_CHOICES = (
 class Village(models.Model):
     number = models.CharField("number", max_length=128)
     name = models.CharField("username", max_length=128)
-    parent = models.ForeignKey("self", related_name='child_villages', null=True, blank=True)
+    parent = models.ForeignKey("self", related_name='child_villages', null=True, blank=True, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
