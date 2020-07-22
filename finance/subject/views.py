@@ -394,6 +394,7 @@ class AssisView(APIView):
                 return common_response(code=500, msg='id不存在') 
             else:
                 info = {
+                    'id': a_obj.id,
                     'name': ass_obj.assist_name
                 }
                 return common_response(data=info)
