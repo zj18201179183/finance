@@ -183,7 +183,7 @@ class SubjectView(APIView):
             return common_response(code=500, msg='用户不存在!')
 
         data = request.data
-        sub_id = HASHIDS.decode(data['sub_id'])[0]
+        sub_id = data.get('sub_id', 0)
         try:
             sub_obj = Subject.objects.get(id=sub_id)
         except Subject.DoesNotExist:
