@@ -17,7 +17,7 @@ class VoucherView(APIView):
         # 验证用户信息
         is_log, user_id = is_logined(request)
         try:
-            obj = User.objects.get(id=user_id)
+            user_obj = User.objects.get(id=user_id)
         except User.DoesNotExist:
             return common_response(code=500, msg='用户不存在!')
 
@@ -25,7 +25,6 @@ class VoucherView(APIView):
         voucher_word = data.get('voucher_word', '')
         soa_id = data.get('soa_id', '')
         voucher_type = data.get('voucher_type', 0)
-        created_user = data.get('created_user', 1)
         voucher_date = data.get('voucher_date', date.today())
         if isinstance(voucher_date, str):
             voucher_date = datetime.strptime(voucher_date, '%Y-%m-%d').date()
@@ -56,14 +55,10 @@ class VoucherView(APIView):
         if not subject_data[0]['abstract']:
             return common_response(code=500, msg='第一1条分录摘要不能为空！')
 
-        try:
-            user_obj = User.objects.get(id=created_user)
-        except User.DoesNotExist:
-            return common_response(code=500, msg='用户id不存在')
-
         voucher_obj = Voucher.objects.create(
             voucher_word=voucher_word,
             voucher_type=voucher_type,
+            soa=soa_id,
             created_user=user_obj,
             voucher_date=voucher_date,
             soa=soa_obj
@@ -120,18 +115,19 @@ class VoucherView(APIView):
         if not voucher_id:
             return common_response(code=500, msg='缺少凭证id')
 
-        voucher_word = data.get('voucher_word', '')
-        voucher_type = data.get('voucher_type', 0)
-        voucher_date = data.get('voucher_date', date.today())
-        subject_data = data.get('subjects', '')
-
-        if isinstance(voucher_date, str):
-            voucher_date = datetime.strptime(voucher_date, '%Y-%m-%d').date()
         # 查询并修改
         try:
             voucher_obj = Voucher.objects.get(id=voucher_id)
         except Voucher.DoesNotExist:
             return common_response(code=500, msg='ID不存在')
+
+        voucher_word = data.get('voucher_word', voucher_obj.voucher_word)
+        voucher_type = data.get('voucher_type', voucher_obj.voucher_type)
+        voucher_date = data.get('voucher_date', voucher_obj.voucher_date)
+        subject_data = data.get('subjects', '')
+        if isinstance(voucher_date, str):
+            voucher_date = datetime.strptime(voucher_date, '%Y-%m-%d').date()
+
         voucher_obj.voucher_word = voucher_word
         voucher_obj.voucher_type = voucher_type
         voucher_obj.voucher_date = voucher_date
@@ -231,7 +227,16 @@ class VoucherView(APIView):
 
         if data_type == 'list':
             # 获取所有的凭证
-            all_vouchers = Voucher.objects.all()
+            soa_id = request.GET.get('soa_id', '')
+            if not soa_id:
+                return common_response(code=500, msg='帐套id不能为空')
+
+            try:
+                soa_obj = SetOfAccounts.objects.get(id=soa_id)
+            except SetOfAccounts.DoesNotExist:
+                return common_response(code=500, msg='帐套id不存在')
+
+            all_vouchers = Voucher.objects.filter(soa=soa_obj.id).all()
             voucher_list = []
             for voucher_obj in all_vouchers:
                 voucher_info = {
