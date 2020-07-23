@@ -288,6 +288,7 @@ class SubjectView(APIView):
                 return common_response(code=500, msg='项目id不存在')
             
             sub_info = {
+                'id': sub_obj.id,
                 'subject_num' : sub_obj.subject_num,
                 'subject_name' : sub_obj.subject_name,
                 'parent' : sub_obj.parent.id if sub_obj.parent else '',
