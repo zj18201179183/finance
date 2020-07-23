@@ -297,7 +297,7 @@ class SubjectView(APIView):
                 'assists' : sub_obj.assist_list(),
                 'num' : sub_obj.subjectofaccounts.num if sub_obj.subjectofaccounts.num else 0,
                 'money' : sub_obj.subjectofaccounts.money if sub_obj.subjectofaccounts.money else 0,
-                'assists' : sub_obj.subjectofaccounts.assists
+                'assists' : sub_obj.assist_list()
             }
             data = {
                 'sub_info': sub_info,
