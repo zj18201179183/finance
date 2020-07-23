@@ -58,7 +58,6 @@ class VoucherView(APIView):
         voucher_obj = Voucher.objects.create(
             voucher_word=voucher_word,
             voucher_type=voucher_type,
-            soa=soa_id,
             created_user=user_obj,
             voucher_date=voucher_date,
             soa=soa_obj
