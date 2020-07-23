@@ -318,6 +318,8 @@ class SubjectView(APIView):
                     'parent': sub_obj.parent.subject_name if sub_obj.parent else '-',
                     'subject_type': sub_obj.get_subject_type_display(),
                     'balance_type': sub_obj.get_balance_type_display(),
+                    'num' : sub_obj.subjectofaccounts.num if sub_obj.subjectofaccounts.num else 0,
+                    'money' : sub_obj.subjectofaccounts.money if sub_obj.subjectofaccounts.money else 0,
                 }
                 sub_list.append(sub_info)
             return common_response(data=sub_list)
