@@ -347,7 +347,7 @@ class AssisView(APIView):
             return common_response(code=500, msg='用户不存在!')
 
         data = request.data
-        ass_id = HASHIDS.decode(data['ass_id'])[0]
+        ass_id = data.get('ass_id', '')
         try:
             ass_obj = Assist.objects.get(id=ass_id)
         except Assist.DoesNotExist:
