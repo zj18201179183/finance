@@ -313,6 +313,7 @@ class SubjectView(APIView):
             sub_list = []
             for sub_obj in sub_all:
                 sub_info = {
+                    'id': sub_obj.id,
                     'subject_num': sub_obj.subject_num,
                     'subject_name': sub_obj.subject_name,
                     'parent': sub_obj.parent.subject_name if sub_obj.parent else '-',
