@@ -8,4 +8,5 @@ urlpatterns = [
     path('setofaccount', views.SetOfAccountsView.as_view()),
     # path('setmoney', views.SetSubjectMoneyView.as_view()),
     path('assist', views.AssisView.as_view()),
+    path('balance', views.BalanceView.as_view()),
 ]

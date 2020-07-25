@@ -87,7 +87,7 @@ class UserViewSet(APIView):
             identity=identity,
             last_login=datetime.now(),
             photo=data['photo'] if 'photo' in data else '',
-            village_id=user.village
+            village_id=obj.village
         )
         user_obj.save()
         return common_response(msg='True')

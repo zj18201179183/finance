@@ -416,6 +416,37 @@ class AssisView(APIView):
         return common_response(data=ass_list)
 
 
+class BalanceView(APIView):
+    def get(self, request):
+        # 验证用户信息
+        is_log, user_id = is_logined(request)
+        try:
+            obj = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return common_response(code=500, msg='用户不存在!')
+
+        soa_id = request.GET.get('soa_id', '')
+        if not soa_id:
+            return common_response(code=500, msg='缺少帐套id')
+        try:
+            soa_obj = SetOfAccounts.objects.get(id=soa_id)
+        except SetOfAccounts.DoesNotExist:
+            return common_response(code=500, msg='帐套id不存在')
+        
+        # 帐套下所有的科目
+        debtor_money = 0 # 借方金额
+        credit_money = 0 # 贷方金额
+        for sub_obj in soa_obj.accountofsubjects.all():
+            if sub_obj.subject.balance_type == 0:
+                debtor_money += sub_obj.num * sub_obj.money
+            else:
+                credit_money += sub_obj.num * sub_obj.money
+
+        if debtor_money != credit_money:
+            return common_response(msg='您录入的初始余额不平衡，请仔细核对')
+
+        return common_response()
+
 # class SetSubjectMoneyView(APIView):
 #     def post(self, request):
 #         ''' 设置科目余额 '''

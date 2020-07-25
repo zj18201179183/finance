@@ -56,7 +56,7 @@ class AccountDetailView(APIView):
 
             # 计算余额
             if key == 0:
-                soa_obj = obj.subject.subjectofaccountss.filter(account=soa_id)[0]
+                soa_obj = obj.subject.subjectofaccounts
                 balance[obj.subject.subject_name]['balance'] = soa_obj.num * soa_obj.money
                 voucher_info = {
                     'date': datetime.strftime(obj.voucher.voucher_date,'%Y-%m-%d'),
@@ -212,11 +212,10 @@ class AllAccountView(APIView):
 
         for key, val in result.items():
             sub_obj = Subject.objects.get(id=key)
-            soa_obj_all = sub_obj.subjectofaccountss.all()
-            if not soa_obj_all:
+            soa_obj = sub_obj.subjectofaccounts.all()
+            if not soa_obj:
                 balance = 0
             else:
-                soa_obj = soa_obj_all[0]
                 balance = soa_obj.num * soa_obj.money
 
             result[key]['type'] = sub_obj.get_balance_type_display()
@@ -369,11 +368,10 @@ class BusinessAccountView(APIView):
 
             for key, val in result.items():
                 sub_obj = Subject.objects.get(id=key)
-                soa_obj_all = sub_obj.subjectofaccountss.all()
-                if not soa_obj_all:
+                soa_obj = sub_obj.subjectofaccounts if hasattr('sub_obj', 'subjectofaccounts') else 0
+                if not soa_obj:
                     balance = 0
                 else:
-                    soa_obj = soa_obj_all[0]
                     balance = soa_obj.num * soa_obj.money
 
                 result[key]['type'] = sub_obj.get_balance_type_display()
