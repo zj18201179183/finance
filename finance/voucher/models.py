@@ -14,7 +14,7 @@ VOUCHER_TYPE = (
 
 class Voucher(models.Model):
     voucher_type = models.SmallIntegerField("凭证字", choices=VOUCHER_TYPE, default=0)
-    voucher_word = models.IntegerField("凭证字号", null=True, max_length=128)
+    voucher_word = models.IntegerField("凭证字号", null=True)
     soa = models.ForeignKey(SetOfAccounts, related_name='accountofvouchers', on_delete=models.CASCADE)
     created_user = models.ForeignKey(User, related_name='creators', on_delete=models.CASCADE)
     check_user = models.ForeignKey(User, related_name='checkers', null=True, blank=True, on_delete=models.CASCADE)

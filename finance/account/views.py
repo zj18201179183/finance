@@ -46,6 +46,7 @@ class AccountDetailView(APIView):
         for child_obj in voucher_child_obj:
             if child_obj.subject.subject_name not in result:
                 # 初期余额
+                setofaccounts_obj = child_obj.subject.subjectofaccounts.filter(account=soa_obj).first()
                 begin_subject_info = {
                     'id': child_obj.subject.id,
                     'number': child_obj.subject.subject_num,
@@ -58,7 +59,7 @@ class AccountDetailView(APIView):
                             'debtor_money': 0,
                             'credit_money': 0,
                             'type': child_obj.subject.get_balance_type_display(),
-                            'balance': child_obj.subject.subjectofaccounts.num*child_obj.subject.subjectofaccounts.money,
+                            'balance': setofaccounts_obj.num*setofaccounts_obj.money,
                         }
                     ]
                 }
@@ -282,6 +283,7 @@ class BusinessAccountView(APIView):
             if sub_obj.subject_name not in result:
                 # 设置初期余额
                 result[sub_obj.subject_name] = []
+                subjectofaccount_obj = sub_obj.subjectofaccounts.filter(account=soa_id).first()
                 info = {
                     'date': datetime.strftime(initial_start_date, '%Y-%m-%d'),
                     'voucher_word': '',
@@ -289,7 +291,7 @@ class BusinessAccountView(APIView):
                     'debtor_money': 0,
                     'credit_money': 0,
                     'type': '平',
-                    'balance': sub_obj.subjectofaccounts.num * sub_obj.subjectofaccounts.money,
+                    'balance': subjectofaccount_obj.num * subjectofaccount_obj.money,
                 }
                 result[sub_obj.subject_name].append(info)
 
