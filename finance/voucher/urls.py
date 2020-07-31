@@ -5,5 +5,6 @@ from . import views
 
 urlpatterns = [
     path('', views.VoucherView.as_view()),
-    path('voucher/check/', views.VoucherView.as_view()),
+    path('check/', views.VoucherCheckView.as_view()),
+    path('transfer', views.TransferView.as_view()),
 ]

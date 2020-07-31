@@ -2,6 +2,7 @@ from finance.basic import common_response
 from utils.token import token_util
 from django.core.files.storage import FileSystemStorage
 from django.http import HttpResponse
+from .models import *
 
 
 def login_required(func):
@@ -64,3 +65,10 @@ class ImageStorage(FileSystemStorage):
         name = os.path.join(d, fn + ext)
         # 调用父类方法
         return super(ImageStorage, self)._save(name, content)
+
+
+# 验证用户权限
+def has_permission(user_obj, view, method):
+    if not user_obj.group.permission.filter(api_name=view, method=method):
+        return False
+    return True

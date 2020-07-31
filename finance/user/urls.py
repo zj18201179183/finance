@@ -8,4 +8,5 @@ urlpatterns = [
     path('put/', views.UserAuthView.as_view()),
     path('user/', views.UserViewSet.as_view()),
     path('village/', views.VillageView.as_view()),
+    path('group/', views.GroupView.as_view()),
 ]

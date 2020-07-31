@@ -6,7 +6,7 @@ from . import views
 urlpatterns = [
     path('', views.SubjectView.as_view()),
     path('setofaccount', views.SetOfAccountsView.as_view()),
-    # path('setmoney', views.SetSubjectMoneyView.as_view()),
+    path('setmoney', views.SetSubjectMoneyView.as_view()),
     path('assist', views.AssisView.as_view()),
     path('balance', views.BalanceView.as_view()),
 ]
